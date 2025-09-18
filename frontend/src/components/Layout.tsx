@@ -13,7 +13,6 @@ import {
   DollarSign, 
   Package, 
   MessageSquare, 
-  Bot,
   Menu,
   X,
   LogOut
@@ -34,7 +33,6 @@ const navigation = [
   { name: 'Fees', href: '/fees', icon: DollarSign },
   { name: 'Inventory', href: '/inventory', icon: Package },
   { name: 'Communication', href: '/communication', icon: MessageSquare },
-  { name: 'AI Assistant', href: '/ai', icon: Bot },
 ]
 
 export default function Layout({ children }: { children: React.ReactNode }) {

@@ -15,8 +15,6 @@ import Marks from './pages/Marks'
 import Fees from './pages/Fees'
 import Inventory from './pages/Inventory'
 import Communication from './pages/Communication'
-import AI from './pages/AI'
-
 function App() {
   const { user, checkAuth } = useAuthStore()
 
@@ -44,7 +42,6 @@ function App() {
         <Route path="/fees" element={<Fees />} />
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/communication" element={<Communication />} />
-        <Route path="/ai" element={<AI />} />
       </Routes>
     </Layout>
   )

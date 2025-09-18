@@ -1,6 +1,6 @@
 # Inkingi Smart School App
 
-A comprehensive multi-tenant school management platform with role-based access control, communication tools, fees and inventory tracking, and an AI agent powered by each school's private data.
+A comprehensive multi-tenant school management platform with role-based access control, communication tools, fees and inventory tracking.
 
 ## 🚀 Features
 
@@ -16,7 +16,6 @@ A comprehensive multi-tenant school management platform with role-based access c
 - **Fees Management**: Fee structures, payments, and financial tracking
 - **Inventory Management**: School assets and stock management
 - **Communication**: Email and SMS to users/parents
-- **AI Agent**: Chat with school data, generate insights, and reports
 
 ### Technology Stack
 
@@ -25,7 +24,7 @@ A comprehensive multi-tenant school management platform with role-based access c
 - SQLAlchemy 2.x + Alembic for ORM and migrations
 - PostgreSQL with Row-Level Security (RLS) for multi-tenancy
 - Redis for caching and background jobs
-- Celery for async tasks (email/SMS, reports, AI processing)
+- Celery for async tasks (email/SMS, reports)
 - JWT authentication with role-based access control
 
 **Frontend:**
@@ -54,7 +53,6 @@ A comprehensive multi-tenant school management platform with role-based access c
 - Academic calendar, class management, and enrollment tracking
 - Financial management with fees and payments
 - Communication system with email/SMS capabilities
-- AI chat sessions and message history
 
 ## 🚀 Quick Start
 
@@ -125,7 +123,6 @@ SECRET_KEY=your-secret-key-change-in-production
 SMTP_HOST=your-smtp-host
 SMTP_USERNAME=your-smtp-username
 SMTP_PASSWORD=your-smtp-password
-OPENAI_API_KEY=your-openai-api-key
 ```
 
 **Frontend (.env)**
@@ -151,7 +148,6 @@ VITE_API_URL=http://localhost:8000/api/v1
 8. **Fees**: Manage fee structures and payments
 9. **Inventory**: Track school assets and supplies
 10. **Communication**: Send emails and SMS to stakeholders
-11. **AI Assistant**: Chat with school data and get insights
 
 ## 🏛️ Multi-Tenancy
 
@@ -249,13 +245,13 @@ For support and questions:
 ### Phase 2 (Next)
 - 🔄 Advanced reporting and analytics
 - 🔄 Mobile app (React Native)
-- 🔄 Advanced AI features
+- 🔄 Advanced reporting features
 - 🔄 Integration with external services
 
 ### Phase 3 (Future)
 - 📋 Advanced analytics dashboard
 - 📋 Mobile app for parents and students
-- 📋 Advanced AI-powered insights
+- 📋 Advanced analytics insights
 - 📋 Third-party integrations (payment gateways, SMS providers)
 
 ---

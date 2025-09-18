@@ -10,8 +10,6 @@ from .marks import Assignment, Exam, AssignmentMark, ExamMark
 from .fees import FeeStructure, Fee, Payment
 from .inventory import Inventory, InventoryItem, StockMovement
 from .communication import Message, MessageRecipient
-from .ai import ChatSession, ChatMessage
-
 __all__ = [
     "Base",
     "School",
@@ -23,6 +21,5 @@ __all__ = [
     "Assignment", "Exam", "AssignmentMark", "ExamMark",
     "FeeStructure", "Fee", "Payment",
     "Inventory", "InventoryItem", "StockMovement",
-    "Message", "MessageRecipient",
-    "ChatSession", "ChatMessage"
+    "Message", "MessageRecipient"
 ]

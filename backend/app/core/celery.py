@@ -9,7 +9,6 @@ celery_app = Celery(
         "app.tasks.email",
         "app.tasks.sms",
         "app.tasks.reports",
-        "app.tasks.ai",
     ]
 )
 

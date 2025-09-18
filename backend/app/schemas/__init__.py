@@ -9,8 +9,6 @@ from .marks import AssignmentCreate, AssignmentUpdate, AssignmentResponse, ExamC
 from .fees import FeeStructureCreate, FeeStructureUpdate, FeeStructureResponse, FeeCreate, FeeUpdate, FeeResponse
 from .inventory import InventoryCreate, InventoryUpdate, InventoryResponse, InventoryItemCreate, InventoryItemUpdate, InventoryItemResponse
 from .communication import MessageCreate, MessageResponse
-from .ai import ChatSessionCreate, ChatSessionResponse, ChatMessageCreate, ChatMessageResponse
-
 __all__ = [
     "UserCreate", "UserUpdate", "UserResponse", "UserLogin",
     "SchoolCreate", "SchoolUpdate", "SchoolResponse",
@@ -22,6 +20,5 @@ __all__ = [
     "AssignmentCreate", "AssignmentUpdate", "AssignmentResponse", "ExamCreate", "ExamUpdate", "ExamResponse",
     "FeeStructureCreate", "FeeStructureUpdate", "FeeStructureResponse", "FeeCreate", "FeeUpdate", "FeeResponse",
     "InventoryCreate", "InventoryUpdate", "InventoryResponse", "InventoryItemCreate", "InventoryItemUpdate", "InventoryItemResponse",
-    "MessageCreate", "MessageResponse",
-    "ChatSessionCreate", "ChatSessionResponse", "ChatMessageCreate", "ChatMessageResponse"
+    "MessageCreate", "MessageResponse"
 ]
