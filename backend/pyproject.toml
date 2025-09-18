@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=68", "wheel>=0.41"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inkingi-backend"
+version = "0.1.0"
+description = "Inkingi Smart School App backend (FastAPI)"
+authors = [
+  {name = "Inkingi Team", email = "dev@inkingi.local"}
+]
+requires-python = ">=3.11"
+readme = "README.md"
+dependencies = [
+  # Core FastAPI
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.30.0",
+  
+  # Database
+  "SQLAlchemy>=2.0.30",
+  "asyncpg>=0.29.0",
+  "aiosqlite>=0.20.0",
+  "alembic>=1.13.1",
+  
+  # Validation
+  "pydantic>=2.7.0",
+  "email-validator>=2.1.0",
+  
+  # Environment
+  "python-dotenv>=1.0.1",
+  
+  # Background tasks
+  "celery>=5.4.0",
+  "redis>=5.0.4",
+  
+  # Authentication & Security
+  "python-jose[cryptography]>=3.3.0",
+  "passlib[argon2]>=1.7.4",
+  "python-multipart>=0.0.6",
+  
+  # Communication
+  "sendgrid>=6.11.0",
+  "twilio>=9.2.0",
+  "aiosmtplib>=3.0.0",
+  
+  
+  # File Storage
+  "boto3>=1.34.0",
+  "minio>=7.2.0",
+  
+  # Utilities
+  "httpx>=0.27.0",
+  "python-dateutil>=2.9.0",
+  "pytz>=2024.1",
+]
+
+[tool.setuptools]
+package-dir = {"" = "app"}
+
+[tool.setuptools.packages.find]
+where = ["app"]
+include = ["*"] 
