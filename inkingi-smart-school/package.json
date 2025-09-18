@@ -1,0 +1,30 @@
+{
+  "name": "inkingi-smart-school",
+  "version": "1.0.0",
+  "description": "Multi-tenant school management platform with RBAC",
+  "scripts": {
+    "dev": "./scripts/dev-setup.sh",
+    "build": "cd frontend && npm run build",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "migrate": "docker-compose exec backend alembic upgrade head",
+    "seed": "docker-compose exec backend python scripts/seed_data.py",
+    "reset-db": "docker-compose down -v && docker-compose up -d postgres redis && sleep 10 && npm run migrate && npm run seed"
+  },
+  "keywords": [
+    "school-management",
+    "multi-tenant",
+    "fastapi",
+    "react",
+    "typescript",
+    "postgresql",
+    "rbac"
+  ],
+  "author": "Inkingi Development Team",
+  "license": "PROPRIETARY",
+  "engines": {
+    "node": ">=18.0.0",
+    "docker": ">=20.0.0"
+  }
+}
