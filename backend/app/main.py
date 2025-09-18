@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from .core.config import settings
 from .db.session import Base, engine
+from .db.rls import setup_rls
 
 # Import all routers
 from .api.routers.auth import router as auth_router
@@ -54,6 +55,9 @@ app.include_router(messages_router, prefix="/messages", tags=["messages"])
 async def on_startup_create_tables() -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    # Configure PostgreSQL RLS policies if using Postgres
+    if settings.database_url.startswith("postgresql"):
+        await setup_rls(engine)
 
 
 @app.get("/")

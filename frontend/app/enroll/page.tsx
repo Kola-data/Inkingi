@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from '../../components/ui/Toaster'
+import { confirmModal } from '../../components/ui/ConfirmModal'
 
 export default function EnrollPage() {
   const [studentId, setStudentId] = useState('')
@@ -10,6 +12,8 @@ export default function EnrollPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     setMessage('')
+    const proceed = await confirmModal('Are you sure you want to enroll this student?')
+    if (!proceed) return
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/enrollments`, {
       method: 'POST',
       headers: {
@@ -18,8 +22,13 @@ export default function EnrollPage() {
       },
       body: JSON.stringify({ student_id: Number(studentId), class_id: Number(classId) })
     })
-    if (res.ok) setMessage('Enrollment created')
-    else setMessage('Error creating enrollment (ensure current academic year set)')
+    if (res.ok) {
+      setMessage('Enrollment created')
+      toast({ title: 'Enrollment created', type: 'success' })
+    } else {
+      setMessage('Error creating enrollment (ensure current academic year set)')
+      toast({ title: 'Enrollment failed', type: 'error' })
+    }
   }
 
   return (
