@@ -1,143 +1,80 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, Float, Text, Numeric
-from sqlalchemy.sql import func
+from sqlalchemy import Column, String, Integer, ForeignKey, Float, Date, Text, Boolean
 from sqlalchemy.orm import relationship
-from ..db.session import Base
+from app.models.base import BaseModel
 
-
-class AssignmentMark(Base):
-    __tablename__ = "assignment_marks"
-
-    id = Column(Integer, primary_key=True, index=True)
-    school_id = Column(Integer, nullable=False, index=True)
-    student_id = Column(Integer, ForeignKey('students.id'), nullable=False, index=True)
-    course_id = Column(Integer, ForeignKey('courses.id'), nullable=False, index=True)
-    class_id = Column(Integer, ForeignKey('classes.id'), nullable=False, index=True)
-    term_id = Column(Integer, ForeignKey('terms.id'), nullable=False, index=True)
-    academic_year_id = Column(Integer, ForeignKey('academic_years.id'), nullable=False, index=True)
+class Assignment(BaseModel):
+    __tablename__ = "assignments"
     
-    # Assignment details
-    assignment_name = Column(String(255), nullable=False)
-    assignment_type = Column(String(100), nullable=True)  # homework, quiz, project, etc.
-    score = Column(Numeric(5, 2), nullable=False)  # Actual score
-    max_score = Column(Numeric(5, 2), nullable=False)  # Maximum possible score
-    weight = Column(Float, nullable=False, default=1.0)  # Weight in final calculation
-    
-    # Metadata
-    assigned_date = Column(DateTime(timezone=True), nullable=True)
-    due_date = Column(DateTime(timezone=True), nullable=True)
-    submitted_date = Column(DateTime(timezone=True), nullable=True)
-    graded_by = Column(Integer, ForeignKey('staff.id'), nullable=False, index=True)
-    comments = Column(Text, nullable=True)
-    recorded_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-    # Relationships
-    student = relationship("Student")
-    course = relationship("Course")
-    class_ = relationship("Class")
-    term = relationship("Term")
-    academic_year = relationship("AcademicYear")
-    grader = relationship("Staff")
-
-
-class ExamMark(Base):
-    __tablename__ = "exam_marks"
-
-    id = Column(Integer, primary_key=True, index=True)
-    school_id = Column(Integer, nullable=False, index=True)
-    student_id = Column(Integer, ForeignKey('students.id'), nullable=False, index=True)
-    course_id = Column(Integer, ForeignKey('courses.id'), nullable=False, index=True)
-    class_id = Column(Integer, ForeignKey('classes.id'), nullable=False, index=True)
-    term_id = Column(Integer, ForeignKey('terms.id'), nullable=False, index=True)
-    academic_year_id = Column(Integer, ForeignKey('academic_years.id'), nullable=False, index=True)
-    
-    # Exam details
-    exam_name = Column(String(255), nullable=False)
-    exam_type = Column(String(100), nullable=False)  # midterm, final, quiz, etc.
-    score = Column(Numeric(5, 2), nullable=False)  # Actual score
-    max_score = Column(Numeric(5, 2), nullable=False)  # Maximum possible score
-    weight = Column(Float, nullable=False, default=1.0)  # Weight in final calculation
-    
-    # Metadata
-    exam_date = Column(DateTime(timezone=True), nullable=True)
-    duration_minutes = Column(Integer, nullable=True)
-    graded_by = Column(Integer, ForeignKey('staff.id'), nullable=False, index=True)
-    comments = Column(Text, nullable=True)
-    recorded_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
-    # Relationships
-    student = relationship("Student")
-    course = relationship("Course")
-    class_ = relationship("Class")
-    term = relationship("Term")
-    academic_year = relationship("AcademicYear")
-    grader = relationship("Staff")
-
-
-class MarkReport(Base):
-    __tablename__ = "mark_reports"
-
-    id = Column(Integer, primary_key=True, index=True)
-    school_id = Column(Integer, nullable=False, index=True)
-    student_id = Column(Integer, ForeignKey('students.id'), nullable=False, index=True)
-    course_id = Column(Integer, ForeignKey('courses.id'), nullable=False, index=True)
-    class_id = Column(Integer, ForeignKey('classes.id'), nullable=False, index=True)
-    term_id = Column(Integer, ForeignKey('terms.id'), nullable=False, index=True)
-    academic_year_id = Column(Integer, ForeignKey('academic_years.id'), nullable=False, index=True)
-    
-    # Calculated totals
-    assignment_total = Column(Numeric(5, 2), nullable=False, default=0)
-    exam_total = Column(Numeric(5, 2), nullable=False, default=0)
-    total = Column(Numeric(5, 2), nullable=False, default=0)
-    percentage = Column(Numeric(5, 2), nullable=False, default=0)
-    grade = Column(String(10), nullable=True)  # A, B, C, D, F or custom grading
-    
-    # Rankings
-    position = Column(Integer, nullable=True)  # Position in class/course
-    total_students = Column(Integer, nullable=True)  # Total students in comparison
-    
-    # Metadata
-    computed_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    computed_by = Column(Integer, ForeignKey('users.id'), nullable=True)
-
-    # Relationships
-    student = relationship("Student")
-    course = relationship("Course")
-    class_ = relationship("Class")
-    term = relationship("Term")
-    academic_year = relationship("AcademicYear")
-    computed_by_user = relationship("User")
-
-
-class GradingScale(Base):
-    __tablename__ = "grading_scales"
-
-    id = Column(Integer, primary_key=True, index=True)
-    school_id = Column(Integer, nullable=False, index=True)
-    name = Column(String(100), nullable=False)
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=False)
+    course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
+    term_id = Column(Integer, ForeignKey("terms.id"), nullable=False)
+    name = Column(String(200), nullable=False)
     description = Column(Text, nullable=True)
-    is_default = Column(Boolean, default=False, nullable=False)
-    is_active = Column(Boolean, default=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
+    due_date = Column(Date, nullable=False)
+    total_marks = Column(Float, nullable=False)
+    weight = Column(Float, nullable=True)  # Weight in final grade calculation
+    status = Column(String(20), default="active")  # active, completed, cancelled
+    
     # Relationships
-    bands = relationship("GradingBand", back_populates="scale", cascade="all, delete-orphan")
+    school = relationship("School")
+    course = relationship("Course", back_populates="assignments")
+    term = relationship("Term", back_populates="assignments")
+    assignment_marks = relationship("AssignmentMark", back_populates="assignment")
 
-
-class GradingBand(Base):
-    __tablename__ = "grading_bands"
-
-    id = Column(Integer, primary_key=True, index=True)
-    school_id = Column(Integer, nullable=False, index=True)
-    grading_scale_id = Column(Integer, ForeignKey('grading_scales.id'), nullable=False, index=True)
-    grade = Column(String(10), nullable=False)  # A, B, C, etc.
-    min_percentage = Column(Numeric(5, 2), nullable=False)
-    max_percentage = Column(Numeric(5, 2), nullable=False)
-    description = Column(String(255), nullable=True)  # Excellent, Good, etc.
-    gpa_value = Column(Numeric(3, 2), nullable=True)  # 4.0, 3.5, etc.
-
+class Exam(BaseModel):
+    __tablename__ = "exams"
+    
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=False)
+    course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
+    term_id = Column(Integer, ForeignKey("terms.id"), nullable=False)
+    name = Column(String(200), nullable=False)
+    description = Column(Text, nullable=True)
+    exam_date = Column(Date, nullable=False)
+    total_marks = Column(Float, nullable=False)
+    weight = Column(Float, nullable=True)  # Weight in final grade calculation
+    duration_minutes = Column(Integer, nullable=True)
+    status = Column(String(20), default="active")  # active, completed, cancelled
+    
     # Relationships
-    scale = relationship("GradingScale", back_populates="bands") 
+    school = relationship("School")
+    course = relationship("Course", back_populates="exams")
+    term = relationship("Term", back_populates="exams")
+    exam_marks = relationship("ExamMark", back_populates="exam")
+
+class AssignmentMark(BaseModel):
+    __tablename__ = "assignment_marks"
+    
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=False)
+    assignment_id = Column(Integer, ForeignKey("assignments.id"), nullable=False)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
+    marks_obtained = Column(Float, nullable=False)
+    max_marks = Column(Float, nullable=False)
+    grade = Column(String(10), nullable=True)  # A+, A, B+, etc.
+    comments = Column(Text, nullable=True)
+    marked_by = Column(Integer, ForeignKey("staff.id"), nullable=True)
+    marked_at = Column(Date, nullable=False)
+    
+    # Relationships
+    school = relationship("School")
+    assignment = relationship("Assignment", back_populates="assignment_marks")
+    student = relationship("Student", back_populates="assignment_marks")
+    marker = relationship("Staff")
+
+class ExamMark(BaseModel):
+    __tablename__ = "exam_marks"
+    
+    school_id = Column(Integer, ForeignKey("schools.id"), nullable=False)
+    exam_id = Column(Integer, ForeignKey("exams.id"), nullable=False)
+    student_id = Column(Integer, ForeignKey("students.id"), nullable=False)
+    marks_obtained = Column(Float, nullable=False)
+    max_marks = Column(Float, nullable=False)
+    grade = Column(String(10), nullable=True)  # A+, A, B+, etc.
+    comments = Column(Text, nullable=True)
+    marked_by = Column(Integer, ForeignKey("staff.id"), nullable=True)
+    marked_at = Column(Date, nullable=False)
+    
+    # Relationships
+    school = relationship("School")
+    exam = relationship("Exam", back_populates="exam_marks")
+    student = relationship("Student", back_populates="exam_marks")
+    marker = relationship("Staff")

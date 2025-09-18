@@ -1,46 +1,44 @@
+from pydantic_settings import BaseSettings
+from typing import List, Optional
 import os
-from typing import List
 
-class Settings:
+class Settings(BaseSettings):
     # Database
-    database_url: str = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./inkingi.db")
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:password@localhost:5432/inkingi_school"
+    DATABASE_URL_SYNC: str = "postgresql://postgres:password@localhost:5432/inkingi_school"
     
     # Redis
-    redis_url: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    REDIS_URL: str = "redis://localhost:6379"
     
     # Security
-    secret_key: str = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
-    access_token_expire_minutes: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
-    refresh_token_expire_minutes: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES", "43200"))
+    SECRET_KEY: str = "your-secret-key-change-in-production"
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
     # CORS
-    cors_allow_origins: List[str] = os.getenv("CORS_ALLOW_ORIGINS", "*").split(",")
+    ALLOWED_HOSTS: List[str] = ["*"]
     
+    # Email/SMS
+    SMTP_HOST: Optional[str] = None
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    SMS_API_KEY: Optional[str] = None
     
-    # File Storage
-    file_storage_bucket: str = os.getenv("FILE_STORAGE_BUCKET", "inkingi")
-    file_storage_endpoint: str = os.getenv("FILE_STORAGE_ENDPOINT", "http://localhost:9000")
-    file_storage_access_key: str = os.getenv("FILE_STORAGE_ACCESS_KEY", "")
-    file_storage_secret_key: str = os.getenv("FILE_STORAGE_SECRET_KEY", "")
+    # AWS S3
+    AWS_ACCESS_KEY_ID: Optional[str] = None
+    AWS_SECRET_ACCESS_KEY: Optional[str] = None
+    AWS_REGION: str = "us-east-1"
+    S3_BUCKET: Optional[str] = None
     
-    # Email Configuration
-    email_provider: str = os.getenv("EMAIL_PROVIDER", "smtp")
-    smtp_server: str = os.getenv("SMTP_SERVER", "localhost")
-    smtp_port: int = int(os.getenv("SMTP_PORT", "587"))
-    smtp_username: str = os.getenv("SMTP_USERNAME", "")
-    smtp_password: str = os.getenv("SMTP_PASSWORD", "")
-    sendgrid_api_key: str = os.getenv("SENDGRID_API_KEY", "")
+    # Celery
+    CELERY_BROKER_URL: str = "redis://localhost:6379/0"
+    CELERY_RESULT_BACKEND: str = "redis://localhost:6379/0"
     
-    # SMS Configuration
-    sms_provider: str = os.getenv("SMS_PROVIDER", "twilio")
-    twilio_account_sid: str = os.getenv("TWILIO_ACCOUNT_SID", "")
-    twilio_auth_token: str = os.getenv("TWILIO_AUTH_TOKEN", "")
-    twilio_phone_number: str = os.getenv("TWILIO_PHONE_NUMBER", "")
+    # AI
+    OPENAI_API_KEY: Optional[str] = None
     
-    # Application Settings
-    app_name: str = os.getenv("APP_NAME", "Inkingi Smart School")
-    app_version: str = os.getenv("APP_VERSION", "1.0.0")
-    environment: str = os.getenv("ENVIRONMENT", "development")
-    debug: bool = os.getenv("DEBUG", "false").lower() == "true"
+    class Config:
+        env_file = ".env"
 
-settings = Settings() 
+settings = Settings()

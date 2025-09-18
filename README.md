@@ -1,143 +1,263 @@
 # Inkingi Smart School App
 
-A multi-tenant school management platform with role-based access control, communication tools (email/SMS), fees and inventory tracking, and an AI agent powered by each school's private data. Designed for many schools, each with isolated data, and roles including: System Admin, School Admin, Accountant, Teacher (plus Parent as a limited role).
+A comprehensive multi-tenant school management platform with role-based access control, communication tools, fees and inventory tracking, and an AI agent powered by each school's private data.
 
+## 🚀 Features
 
-## Why these technologies
+### Core Features (MVP)
+- **School Management**: Register, verify, and manage schools
+- **User Management**: Role-based access control (System Admin, School Admin, Accountant, Teacher, Parent)
+- **People Management**: Staff, students, and parents with rich profiles
+- **Academic Calendar**: Define academic years and terms per school
+- **Class Management**: Create classes, assign teachers, enroll students
+- **Course Management**: Create courses and assign teachers
+- **Timetable Management**: Generate weekly timetables with conflict detection
+- **Marks Management**: Assignment and exam marks with reporting
+- **Fees Management**: Fee structures, payments, and financial tracking
+- **Inventory Management**: School assets and stock management
+- **Communication**: Email and SMS to users/parents
+- **AI Agent**: Chat with school data, generate insights, and reports
 
-- Backend: FastAPI (Python)
-  - Pydantic v2 for robust validation, automatic OpenAPI, high performance
-  - SQLAlchemy 2.x + Alembic for ORM and migrations
-  - PostgreSQL with Row-Level Security (RLS) for multi-tenancy
-  - Redis for caching, rate limiting, and background jobs queue
-  - Celery (required) for async tasks (email/SMS, reports, ingestion) with Redis broker
-- Frontend: React + Vite + TypeScript with Tailwind CSS
-  - App Router for routing, SSR/ISR, excellent DX
-  - TanStack Query for data fetching/caching
-  - shadcn/ui + Radix UI for accessible components
-  - Zustand (required) for client state
+### Technology Stack
 
-- Infra & DevOps
-  - Docker + Docker Compose for local dev; Terraform + GitHub Actions for cloud
-  - Nginx for reverse proxy; HTTPS with Let's Encrypt
-  - Observability: Sentry (errors), OpenTelemetry + Prometheus + Grafana (metrics), Loki (logs)
+**Backend:**
+- FastAPI (Python) with Pydantic v2 for validation
+- SQLAlchemy 2.x + Alembic for ORM and migrations
+- PostgreSQL with Row-Level Security (RLS) for multi-tenancy
+- Redis for caching and background jobs
+- Celery for async tasks (email/SMS, reports, AI processing)
+- JWT authentication with role-based access control
 
-This stack balances speed, maintainability, and scalability with clear choices you requested: Celery, Zustand, open-source AI, and Nginx.
+**Frontend:**
+- React 18 with Vite and TypeScript
+- Tailwind CSS for styling
+- shadcn/ui + Radix UI for accessible components
+- Zustand for state management
+- TanStack Query for data fetching and caching
+- React Router for navigation
 
+**Infrastructure:**
+- Docker + Docker Compose for local development
+- Nginx for reverse proxy
+- Redis for caching and message queuing
 
-## Core Features (MVP scope)
+## 🏗️ Architecture
 
-- School Management
-  - Register school, verify school, grant access to school
-  - Modify school details and status
-- User Management (RBAC)
-  - Register user, modify details and status
-  - Roles: System Admin, School Admin, Accountant, Teacher (+ Parent limited)
-- People Management
-  - Staff-first creation (rich staff profile), then create user account with role/scopes
-  - Parents and Students with meaningful personal/contact data
-- Academic Calendar
-  - Define academic years and terms/semesters per school
-  - Set current year/term; lock past terms; copy structures across years
-- Class Management
-  - Create class (e.g., P2)
-  - Assign class to a teacher (homeroom)
-  - Enroll students into class for the current academic year
-- Course Management
-  - Create course, assign course to teacher (by staff)
-- Timetable Management
-  - Define periods/slots, rooms; generate weekly timetable per class and course
-  - Assign teachers and rooms to periods; conflict detection (teacher/room/student)
-  - Publish timetable to web and PDF/ICS export
-- Marks Management
-  - Assignment marks and Exam marks as separate entities
-  - Report table combines assignment and exam marks per student/course/term
-  - Modify marks and recompute reports
-- Fees Management
-  - Create fee structure, modify status, record fee for student
-- Inventory Management
-  - Create inventory, modify inventory, create item, modify status
-- Communication
-  - Email and SMS to one or many users/parents
-- AI Agent (per-tenant)
-  - Chat with school data (Q&A), summarize reports, draft communications
+### Multi-Tenancy Design
+- **Isolation Strategy**: Row-Level Security (RLS) in PostgreSQL on `tenant_id`
+- **Domain Strategy**: `schoolSlug.app.com` or custom domain mapping
+- **Access Control**: Fine-grained permissions with role-based access
 
+### Database Design
+- Multi-tenant tables with `tenant_id` for data isolation
+- Comprehensive RBAC system with roles, permissions, and access scopes
+- Academic calendar, class management, and enrollment tracking
+- Financial management with fees and payments
+- Communication system with email/SMS capabilities
+- AI chat sessions and message history
 
-## Multi-Tenancy Design
+## 🚀 Quick Start
 
-- Isolation Strategy: Row-Level Security (RLS) in PostgreSQL on `tenant_id` (a.k.a. `school_id`).
-  - Every row in multi-tenant tables includes `tenant_id`.
-  - DB policies enforce `current_setting('app.tenant_id') = tenant_id`.
-  - API layer sets `app.tenant_id` per request after domain/subdomain or token claims are validated.
-- Domain Strategy: `schoolSlug.app.com` or custom domain mapping table.
-- Super Admin (System Admin) can query across tenants but only through privileged services/functions.
-- Optional: If required in the future, support schema-per-tenant for heavy isolation.
+### Prerequisites
+- Docker and Docker Compose
+- Node.js 18+ (for local development)
+- Python 3.11+ (for local development)
 
+### Using Docker (Recommended)
 
-## RBAC and Access Control Model
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd inkingi-smart-school
+   ```
 
-- Tables: `roles`, `permissions`, `role_permissions`, `user_roles`, optional `user_permissions` overrides.
-- Access scope table for fine-grained restrictions (optional, per user):
-  - `access_control_entries(id, school_id, user_id, scope_type, scope_id, created_at)`
-  - `scope_type` ∈ {`school`, `class`, `course`}
-- Default Roles and high-level capabilities:
-  - System Admin: manage platform, verify schools, billing, cross-tenant ops
-  - School Admin: manage school setup, staff, classes, courses, fees, inventory, communications
-  - Accountant: fees, payments, invoices, financial reports
-  - Teacher: classes, courses, marks, timetable, communicate with assigned students/parents
-  - Parent: view child progress, fees, communications (read + limited actions)
+2. **Start the services**
+   ```bash
+   docker-compose up -d
+   ```
 
+3. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:8000
+   - API Documentation: http://localhost:8000/docs
 
-## High-Level Architecture
+### Local Development
 
-- Client (Next.js) → API Gateway/Proxy → FastAPI services
-- FastAPI services split by bounded contexts:
-  - Identity & Access (auth, RBAC, tenants, access scopes)
-  - Academic Calendar (years, terms)
-  - Academics (classes, courses, marks, enrollment, timetable)
-  - People (staff, users, parents, students)
-  - Finance (fees, payments, invoices)
-  - Inventory (warehouses, items, stock movements)
-  - Communication (email, SMS, notifications)
-  - AI Agent (RAG pipelines, chat sessions)
-- Data: PostgreSQL (with pgvector), Redis, S3-compatible storage (file uploads)
-- Workers: Celery consumers for async tasks
+1. **Backend Setup**
+   ```bash
+   cd backend
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   cp .env.example .env
+   # Edit .env with your configuration
+   uvicorn app.main:app --reload
+   ```
 
+2. **Frontend Setup**
+   ```bash
+   cd frontend
+   npm install
+   cp .env.example .env
+   # Edit .env with your configuration
+   npm run dev
+   ```
 
-## Data Model (indicative)
+3. **Database Setup**
+   ```bash
+   # Start PostgreSQL and Redis
+   docker-compose up -d postgres redis
+   
+   # Run migrations
+   cd backend
+   alembic upgrade head
+   ```
 
-- Tenancy & Identity
-  - `schools(id, name, slug, status, verified_at, contact_email, contact_phone, address_json, created_at, updated_at)`
-  - `staff(id, school_id, first_name, last_name, other_names, gender, dob, national_id, phone, email, address_json, employment_no, position, department, qualification, hire_date, contract_type, status, created_at, updated_at)`
-  - `users(id, school_id, staff_id NULLABLE, email, phone, password_hash, status, last_login_at, created_at, updated_at)`
-  - `roles(id, name, scope)` and `user_roles(user_id, role_id, school_id)`
-  - `access_control_entries(id, school_id, user_id, scope_type, scope_id, created_at)`
-- Academic Calendar
-  - `academic_years(id, school_id, name, start_date, end_date, is_current, created_at, updated_at)`  # e.g., 2025/2026
-  - `terms(id, school_id, academic_year_id, name, start_date, end_date, order_index, is_current, locked, created_at, updated_at)`  # e.g., Term 1, 2, 3
-- Academics (classes only per your request)
-  - `classes(id, school_id, name, level, status, created_at, updated_at)`  # e.g., P2
-  - `class_teachers(id, school_id, class_id, staff_id, assigned_at)`
-  - `enrollments(student_id, class_id, school_id, academic_year_id, enrolled_at, status)`  # defaults to current academic year
+## 🔧 Configuration
 
-Notes:
-- Enrollment must reference the current `academic_year_id` by default if not provided.
+### Environment Variables
 
+**Backend (.env)**
+```env
+DATABASE_URL=postgresql+asyncpg://postgres:password@localhost:5432/inkingi_school
+REDIS_URL=redis://localhost:6379
+SECRET_KEY=your-secret-key-change-in-production
+SMTP_HOST=your-smtp-host
+SMTP_USERNAME=your-smtp-username
+SMTP_PASSWORD=your-smtp-password
+OPENAI_API_KEY=your-openai-api-key
+```
 
-## API Surface (focused on your scope)
+**Frontend (.env)**
+```env
+VITE_API_URL=http://localhost:8000/api/v1
+```
 
-- Classes
-  - POST `/classes` (create class)
-  - POST `/classes/{classId}/assign-teacher` (assign class to teacher)
-- Enrollments
-  - POST `/enrollments` with `student_id`, `class_id`
-    - If `academic_year_id` omitted, server resolves to current year for the school
+## 📱 Usage
 
-Server behavior:
-- Current academic year is resolved from `academic_years.is_current = true` for the tenant; if none, 409 error until set.
-- Assigning class teacher creates or updates a single active assignment; historical entries kept with timestamps.
+### Demo Credentials
+- Email: admin@school.com
+- Password: password123
 
+### Key Features
 
-## Local Development, Security, and other sections
+1. **Dashboard**: Overview of school statistics and recent activities
+2. **School Management**: Create and manage multiple schools
+3. **User Management**: Add users with different roles and permissions
+4. **Student Management**: Enroll students and manage their information
+5. **Class Management**: Create classes and assign teachers
+6. **Timetable**: Generate and manage class schedules
+7. **Marks**: Record and track student grades
+8. **Fees**: Manage fee structures and payments
+9. **Inventory**: Track school assets and supplies
+10. **Communication**: Send emails and SMS to stakeholders
+11. **AI Assistant**: Chat with school data and get insights
 
-Unchanged from earlier sections; see above for full details on setup, security, and roadmap. 
+## 🏛️ Multi-Tenancy
+
+The platform supports multiple schools with complete data isolation:
+
+- Each school has its own data space identified by `tenant_id`
+- Row-Level Security ensures data isolation at the database level
+- Schools can have custom domains or use subdomains
+- System administrators can manage all schools
+- School administrators can only access their school's data
+
+## 🔐 Security
+
+- JWT-based authentication with configurable expiration
+- Role-based access control with fine-grained permissions
+- Password hashing using bcrypt
+- CORS protection and input validation
+- SQL injection protection through SQLAlchemy ORM
+- XSS protection through React's built-in escaping
+
+## 📊 API Documentation
+
+The API is fully documented using FastAPI's automatic OpenAPI generation:
+
+- Interactive API docs: http://localhost:8000/docs
+- ReDoc documentation: http://localhost:8000/redoc
+
+## 🧪 Testing
+
+```bash
+# Backend tests
+cd backend
+pytest
+
+# Frontend tests
+cd frontend
+npm test
+```
+
+## 🚀 Deployment
+
+### Production Deployment
+
+1. **Environment Setup**
+   - Set up PostgreSQL and Redis servers
+   - Configure environment variables
+   - Set up SSL certificates
+
+2. **Database Migration**
+   ```bash
+   alembic upgrade head
+   ```
+
+3. **Start Services**
+   ```bash
+   docker-compose -f docker-compose.prod.yml up -d
+   ```
+
+### Cloud Deployment
+
+The application is designed to be deployed on cloud platforms:
+
+- **AWS**: ECS, RDS, ElastiCache, S3
+- **Google Cloud**: Cloud Run, Cloud SQL, Memorystore
+- **Azure**: Container Instances, Azure Database, Redis Cache
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🆘 Support
+
+For support and questions:
+
+- Create an issue in the repository
+- Check the documentation
+- Review the API docs at `/docs`
+
+## 🗺️ Roadmap
+
+### Phase 1 (Current)
+- ✅ Core school management
+- ✅ User authentication and authorization
+- ✅ Basic CRUD operations
+- ✅ Multi-tenant architecture
+
+### Phase 2 (Next)
+- 🔄 Advanced reporting and analytics
+- 🔄 Mobile app (React Native)
+- 🔄 Advanced AI features
+- 🔄 Integration with external services
+
+### Phase 3 (Future)
+- 📋 Advanced analytics dashboard
+- 📋 Mobile app for parents and students
+- 📋 Advanced AI-powered insights
+- 📋 Third-party integrations (payment gateways, SMS providers)
+
+---
+
+Built with ❤️ for educational institutions worldwide.

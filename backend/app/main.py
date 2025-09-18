@@ -1,80 +1,61 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.ext.asyncio import AsyncEngine
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from contextlib import asynccontextmanager
+import redis.asyncio as redis
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+import os
+from dotenv import load_dotenv
 
-from .core.config import settings
-from .db.session import Base, engine
+from app.core.config import settings
+from app.core.database import get_db
+from app.api.v1.api import api_router
+from app.core.redis_client import get_redis
 
-# Import all routers
-from .api.routers.auth import router as auth_router
-from .api.routers.schools import router as schools_router
-from .api.routers.users import router as users_router
-from .api.routers.people import router as people_router
-from .api.routers.calendar import router as calendar_router
-from .api.routers.classes import router as classes_router
-from .api.routers.courses import router as courses_router
-from .api.routers.enrollments import router as enrollments_router
-from .api.routers.timetable import router as timetable_router
-from .api.routers.marks import router as marks_router
-from .api.routers.finance import router as finance_router
-from .api.routers.inventory import router as inventory_router
-from .api.routers.messages import router as messages_router
+load_dotenv()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    app.state.redis = redis.from_url(settings.REDIS_URL)
+    yield
+    # Shutdown
+    await app.state.redis.close()
 
 app = FastAPI(
     title="Inkingi Smart School API",
+    description="Multi-tenant school management platform",
     version="1.0.0",
-    description="Multi-tenant school management platform"
+    lifespan=lifespan
 )
 
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_allow_origins,
+    allow_origins=settings.ALLOWED_HOSTS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Include all routers
-app.include_router(auth_router, prefix="/auth", tags=["authentication"])
-app.include_router(schools_router, prefix="/schools", tags=["schools"])
-app.include_router(users_router, prefix="/users", tags=["users"])
-app.include_router(people_router, prefix="", tags=["people"])  # /staff, /students, /parents
-app.include_router(calendar_router, prefix="/calendar", tags=["calendar"])
-app.include_router(classes_router, prefix="/classes", tags=["classes"])
-app.include_router(courses_router, prefix="/courses", tags=["courses"])
-app.include_router(enrollments_router, prefix="/enrollments", tags=["enrollments"])
-app.include_router(timetable_router, prefix="/timetable", tags=["timetable"])
-app.include_router(marks_router, prefix="/marks", tags=["marks"])
-app.include_router(finance_router, prefix="/finance", tags=["finance"])
-app.include_router(inventory_router, prefix="/inventory", tags=["inventory"])
-app.include_router(messages_router, prefix="/messages", tags=["messages"])
+# Trusted host middleware
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=settings.ALLOWED_HOSTS
+)
 
-
-@app.on_event("startup")
-async def on_startup_create_tables() -> None:
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
+# Include API router
+app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/")
-async def read_root():
-    return {
-        "service": "inkingi-backend",
-        "version": "1.0.0",
-        "status": "running",
-        "features": [
-            "Multi-tenant school management",
-            "Role-based access control",
-            "Academic calendar",
-            "Student enrollment",
-            "Marks and reports",
-            "Fee management",
-            "Inventory tracking",
-            "Communication (Email/SMS)"
-        ]
-    }
-
+async def root():
+    return {"message": "Inkingi Smart School API", "version": "1.0.0"}
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"} 
+    return {"status": "healthy"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
