@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ...api.deps import get_db, get_tenant_school_id
+from ...api.deps import get_tenant_db, get_tenant_school_id
 from ...models.academics import Enrollment, Class
 from ...models.calendar import AcademicYear
 from ...models.school import Student
@@ -14,7 +14,7 @@ router = APIRouter()
 @router.post("", response_model=EnrollmentOut)
 async def enroll_student(
     payload: EnrollmentCreate,
-    db: AsyncSession = Depends(get_db),
+    db: AsyncSession = Depends(get_tenant_db),
     school_id: int = Depends(get_tenant_school_id),
 ):
     student = await db.get(Student, payload.student_id)

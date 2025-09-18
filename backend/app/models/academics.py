@@ -46,6 +46,7 @@ class ClassTeacher(Base):
     class_id = Column(Integer, ForeignKey('classes.id'), nullable=False, index=True)
     staff_id = Column(Integer, ForeignKey('staff.id'), nullable=False, index=True)
     assigned_at = Column(DateTime(timezone=True), server_default=func.now())
+    ended_at = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships
     class_ = relationship("Class", back_populates="class_teachers")

@@ -138,6 +138,21 @@ Server behavior:
 - Assigning class teacher creates or updates a single active assignment; historical entries kept with timestamps.
 
 
-## Local Development, Security, and other sections
+## Local Development
 
-Unchanged from earlier sections; see above for full details on setup, security, and roadmap. 
+Prerequisites: Docker, Docker Compose.
+
+1. Copy environment example: `cp deploy/env.example .env` (optional)
+2. Start stack: `docker compose -f deploy/docker-compose.yml up --build`
+3. Backend API via Nginx proxy: http://localhost:8000
+4. Frontend app via Nginx proxy: http://localhost:8080
+
+Notes:
+- Provide `X-School-ID` header per request to scope tenant.
+- When Postgres is used, RLS is enabled and `app.tenant_id` is set per-request.
+
+## UI Enhancements
+
+- Global Toaster for success/error/info notifications.
+- Custom Confirm modal for destructive or important actions.
+- Form modal for quick-create flows.

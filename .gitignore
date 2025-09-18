@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+
+# Node
+node_modules/
+.dist/
+dist/
+coverage/
+.next/
+
+# Editor
+.idea/
+.vscode/
+.DS_Store
+
+# Alembic
+backend/alembic/versions/*.pyc
+
+# Docker
+*.log
